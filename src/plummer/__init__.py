@@ -4,16 +4,6 @@ from plumbum import local
 from plumbum.commands.base import Pipeline as Pipeline_
 
 
-class CommandProvider:
-    cwd = local.cwd
-    def __getattribute__(self, name: str) -> "CmdCommand" | "Any":
-        try:
-            return super().__getattribute__(name)
-        except AttributeError:
-            setattr(self, name, CmdCommand(name))
-            return super().__getattribute__(name)
-
-
 class Pipeline(Pipeline_):
 
     def __or__(self, other):
@@ -92,3 +82,14 @@ class CmdCommand:
     def __call__(self, *args, **kwargs):
         self.cmd = self.base_command[[*args, *self.format_flags(kwargs)]]
         return self
+
+
+class CommandProvider:
+    cwd = local.cwd
+
+    def __getattribute__(self, name: str) -> CmdCommand | Any:
+        try:
+            return super().__getattribute__(name)
+        except AttributeError:
+            setattr(self, name, CmdCommand(name))
+            return super().__getattribute__(name)
