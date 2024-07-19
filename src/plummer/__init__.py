@@ -5,6 +5,7 @@ from plumbum.commands.base import Pipeline as Pipeline_
 
 
 class CommandProvider:
+    cwd = local.cwd
     def __getattribute__(self, name: str) -> "CmdCommand" | "Any":
         try:
             return super().__getattribute__(name)
